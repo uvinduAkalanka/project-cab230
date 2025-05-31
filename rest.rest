@@ -1,0 +1,170 @@
+### Test User Registration
+POST http://localhost:3000/user/register
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+
+### Test User Login
+POST http://localhost:3000/user/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+
+### Test User Login with Custom Token Expiry
+POST http://localhost:3000/user/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "password123",
+  "bearerExpiresInSeconds": 60,
+  "refreshExpiresInSeconds": 120
+}
+
+### Test Token Refresh (replace with actual refresh token)
+POST http://localhost:3000/user/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "REPLACE_WITH_ACTUAL_REFRESH_TOKEN"
+}
+
+### Test Logout (replace with actual refresh token)
+POST http://localhost:3000/user/logout
+Content-Type: application/json
+
+{
+  "refreshToken": "REPLACE_WITH_ACTUAL_REFRESH_TOKEN"
+}
+
+### Test Registration with Invalid Email
+POST http://localhost:3000/user/register
+Content-Type: application/json
+
+{
+  "email": "invalid-email",
+  "password": "password123"
+}
+
+### Test Registration with Weak Password
+POST http://localhost:3000/user/register
+Content-Type: application/json
+
+{
+  "email": "test2@example.com",
+  "password": "123"
+}
+
+### Test Login with Wrong Password
+POST http://localhost:3000/user/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "wrongpassword"
+}
+
+
+### 🎬 Test Movie Search & Details Endpoints
+
+### 🔍 Search All Movies (First Page)
+GET http://localhost:3000/movies/search
+
+### 🔍 Search Movies by Title
+GET http://localhost:3000/movies/search?title=batman
+
+### 🔍 Search Movies by Year
+GET http://localhost:3000/movies/search?year=2019
+
+### 🔍 Search with Pagination (Page 2)
+GET http://localhost:3000/movies/search?page=2
+
+### 🎥 Get Specific Movie Details
+# Replace with an actual IMDB ID from the search results
+GET http://localhost:3000/movies/data/tt0111161
+
+### 👤 Get Person Details
+# Replace with an actual Person ID from movie details
+GET http://localhost:3000/people/nm0000151
+
+
+#user
+
+### Step 1: Register a test user
+POST http://localhost:3000/user/register
+Content-Type: application/json
+
+{
+  "email": "profile@example.com",
+  "password": "password123"
+}
+
+### Step 2: Login to get JWT token
+POST http://localhost:3000/user/login
+Content-Type: application/json
+
+{
+  "email": "profile@example.com",
+  "password": "password123"
+}
+
+> {%
+    // Capture the bearer token from the JSON response
+    client.global.set("token",  response.body.bearerToken.token);
+%}
+
+### Step 3: Get profile (unauthorized) - should show public view
+GET http://localhost:3000/user/profile@example.com/profile
+
+### Step 4: Get profile (authorized) - should show private view
+# Replace YOUR_JWT_TOKEN with the bearerToken from login response
+GET http://localhost:3000/user/profile@example.com/profile
+Authorization: Bearer {{token}}
+
+### Step 5: Update profile (authorized)
+# Replace YOUR_JWT_TOKEN with the bearerToken from login response
+PUT http://localhost:3000/user/profile@example.com/profile
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "dob": "1990-05-15",
+  "address": "123 Main Street, Brisbane"
+}
+
+### Step 6: Get profile again to see updated data
+GET http://localhost:3000/user/profile@example.com/profile
+Authorization: Bearer {{token}}
+
+### Step 7: Try to update someone else's profile (should fail)
+GET http://localhost:3000/user/john@example.com/profile
+
+### Step 8: Test validation errors - invalid date
+PUT http://localhost:3000/user/profile@example.com/profile
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "dob": "1990-02-30",
+  "address": "123 Main Street"
+}
+
+### Step 9: Test validation errors - missing fields
+PUT http://localhost:3000/user/profile@example.com/profile
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe"
+}
